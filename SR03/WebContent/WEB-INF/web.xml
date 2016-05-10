@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="WebApp_ID" version="3.0" metadata-complete="true">
+  <display-name>SR03</display-name>
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.htm</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>default.html</welcome-file>
+    <welcome-file>default.htm</welcome-file>
+    <welcome-file>default.jsp</welcome-file>
+  </welcome-file-list>
+  <filter>
+        <filter-name>Access</filter-name>
+        <filter-class>controller.filter.Access</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>Access</filter-name>
+        <url-pattern>/private/*</url-pattern>
+    </filter-mapping>
+    <servlet>
+        <display-name>Login</display-name>
+        <servlet-name>Login</servlet-name>
+        <servlet-class>controller.Login</servlet-class>
+    </servlet>
+    <servlet>
+        <display-name>Logout</display-name>
+        <servlet-name>Logout</servlet-name>
+        <servlet-class>controller.Logout</servlet-class>
+    </servlet>
+    <servlet>
+        <display-name>AdminRouter</display-name>
+        <servlet-name>AdminRouter</servlet-name>
+        <servlet-class>controller.AdminRouter</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Login</servlet-name>
+        <url-pattern>/connexion</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Logout</servlet-name>
+        <url-pattern>/deconnexion</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminRouter</servlet-name>
+        <url-pattern>/private/admin/*</url-pattern>
+    </servlet-mapping>
+</web-app>

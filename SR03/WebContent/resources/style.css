@@ -1,0 +1,12 @@
+@CHARSET "UTF-8";
+
+.formulaire {
+	width: 50%;
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#disconnect:hover {
+	background-color: #f0ad4e;
+}
