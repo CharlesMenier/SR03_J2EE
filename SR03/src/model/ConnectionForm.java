@@ -27,20 +27,29 @@ public final class ConnectionForm {
 	public UserDao connect(HttpServletRequest request) 
 	{
 		UserDao user 	= null;
-		String mail 	= request.getParameter(FIELD_MAIL).trim();
-		String password = request.getParameter(FIELD_PWD).trim();
+		String mail 	= request.getParameter(FIELD_MAIL);
+		String password = request.getParameter(FIELD_PWD);
 		
-		if(mail.length() == 0) setError(FIELD_MAIL, "Veuillez remplir le champs Login");
-		if(password.length() == 0) setError(FIELD_PWD, "Veuillez remplir le champs mot de passe");
-		
-		// No errors
-		if (error.isEmpty()) 
+		if(mail != null && password != null)
 		{
-			if ( (user = UserDao.find(mail, password)) == null)
+			if(mail.length() == 0) setError(FIELD_MAIL, "Veuillez remplir le champs 'Login'");
+			if(password.length() == 0) setError(FIELD_PWD, "Veuillez remplir le champs 'Mot de passe'");
+			
+			// No errors
+			if (error.isEmpty()) 
 			{
-				setError(FIELD_PWD, "Email or password is invalid");
+				if ( (user = UserDao.find(mail, password)) == null)
+				{
+					setError(FIELD_PWD, "Email or password is invalid");
+				}
 			}
+			
 		}
+		else
+		{
+			setError(FIELD_MAIL, "");
+		}
+		
 		return user;
 	}
 	

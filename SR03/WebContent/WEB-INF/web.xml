@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="WebApp_ID" version="3.0" metadata-complete="true">
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="WebApp_ID" metadata-complete="true" version="3.0">
   <display-name>SR03</display-name>
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
@@ -10,38 +10,70 @@
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
   <filter>
-        <filter-name>Access</filter-name>
-        <filter-class>controller.filter.Access</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>Access</filter-name>
-        <url-pattern>/private/*</url-pattern>
-    </filter-mapping>
-    <servlet>
-        <display-name>Login</display-name>
-        <servlet-name>Login</servlet-name>
-        <servlet-class>controller.Login</servlet-class>
-    </servlet>
-    <servlet>
-        <display-name>Logout</display-name>
-        <servlet-name>Logout</servlet-name>
-        <servlet-class>controller.Logout</servlet-class>
-    </servlet>
-    <servlet>
-        <display-name>AdminRouter</display-name>
-        <servlet-name>AdminRouter</servlet-name>
-        <servlet-class>controller.AdminRouter</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Login</servlet-name>
-        <url-pattern>/connexion</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>Logout</servlet-name>
-        <url-pattern>/deconnexion</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>AdminRouter</servlet-name>
-        <url-pattern>/private/admin/*</url-pattern>
-    </servlet-mapping>
+    <filter-name>Router</filter-name>
+    <filter-class>controller.filter.Router</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>Router</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  
+  <filter>
+    <filter-name>Access</filter-name>
+    <filter-class>controller.filter.Access</filter-class>
+    <init-param>
+      <param-name>allow</param-name>
+      <param-value>resources</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>Access</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  
+  <servlet>
+    <display-name>Connect</display-name>
+    <servlet-name>Connect</servlet-name>
+    <servlet-class>controller.Connect</servlet-class>
+  </servlet>
+  <servlet>
+    <display-name>Survey</display-name>
+    <servlet-name>Survey</servlet-name>
+    <servlet-class>controller.Survey</servlet-class>
+  </servlet>
+  <servlet>
+    <display-name>Question</display-name>
+    <servlet-name>Question</servlet-name>
+    <servlet-class>controller.Question</servlet-class>
+  </servlet>
+  <servlet>
+    <display-name>Answer</display-name>
+    <servlet-name>Answer</servlet-name>
+    <servlet-class>controller.Answer</servlet-class>
+  </servlet>
+  <servlet>
+    <display-name>User</display-name>
+    <servlet-name>User</servlet-name>
+    <servlet-class>controller.User</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Connect</servlet-name>
+    <url-pattern>/connexion/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>Survey</servlet-name>
+    <url-pattern>/admin/questionnaires/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>Question</servlet-name>
+    <url-pattern>/admin/questions/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>Answer</servlet-name>
+    <url-pattern>/admin/reponses/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>User</servlet-name>
+    <url-pattern>/admin/utilisateurs/*</url-pattern>
+  </servlet-mapping>
 </web-app>

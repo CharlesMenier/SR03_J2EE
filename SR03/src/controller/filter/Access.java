@@ -8,36 +8,85 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import model.dao.UserDao;
+
 public class Access implements Filter {
 	
-	private static final String DEFAULT = "/login.jsp";
 	private static final String USER_SESSION = "sessionUser";
+	private static final String DEFAULT_NOT_CONNECTED 	= "/login.jsp";
+	private static final String DEFAULT_ADMIN 			= "/admin/survey.jsp";
+	private static final String DEFAULT_USER 			= "/user/survey.jsp";
+	
+	private UserDao user = null;
+
+	private String allow;
+	
+	private HttpServletRequest req;
+	private HttpServletResponse resp;
 	private HttpSession session;
 	
+	private String MODULE;
+	private String CONTROLLER;
+	private String ACTION;
+	private String ID;
 
 	@Override
-	public void init(FilterConfig arg0) throws ServletException {}
-
-	@Override
-	public void doFilter(ServletRequest sReq, ServletResponse sResp, FilterChain chain)
-			throws IOException, ServletException 
+	public void init(FilterConfig fc) throws ServletException 
 	{
-		HttpServletRequest req 		= (HttpServletRequest)sReq;
-		HttpServletResponse resp 	= (HttpServletResponse)sResp;
+		allow = fc.getInitParameter("allow");
+	}
+
+	@Override
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
 		
+		// Cast to servlet objects
+		req 	= (HttpServletRequest)request;
+		resp 	= (HttpServletResponse)response;
 		session = req.getSession();
 		
-		if(session.getAttribute(USER_SESSION) == null)
+		user = (UserDao)session.getAttribute(USER_SESSION);
+		
+		MODULE		= (String)req.getAttribute("MODULE");
+		CONTROLLER	= (String)req.getAttribute("CONTROLLER");
+		ACTION		= (String)req.getAttribute("ACTION");
+		ID			= (String)req.getAttribute("ID");
+		
+		// We save the parameters into the session to keep it
+		/*session.setAttribute("MODULE", MODULE);
+		session.setAttribute("CONTROLLER", CONTROLLER);
+		session.setAttribute("ACTION", ACTION);
+		session.setAttribute("ID", ID);*/
+		
+		
+		// Allow access to resources and connection module
+		if(MODULE.equals(allow) || MODULE.equals("connexion"))
 		{
-			req.setAttribute("error", "Vous n'avez pas accès à cette page car vous n'êtes pas connecté");
-			req.getRequestDispatcher(DEFAULT).forward(req, resp);
+			chain.doFilter(req, resp);
+			return;
 		}
-		else chain.doFilter(req, resp);
+		
+		// Not connected, we send the user back to the connection form
+		if(user == null)
+		{
+			req.getRequestDispatcher(DEFAULT_NOT_CONNECTED).forward(req, resp);
+			return;
+		}
+		else
+		{			
+			// Normal users can't access admin module
+			if(!user.isAdmin() && MODULE == "admin")
+			{
+				req.getRequestDispatcher(DEFAULT_USER).forward(req, resp);
+				return;
+			}
+			else chain.doFilter(req, resp);
+		}
+		
 		
 	}
 	
@@ -46,5 +95,6 @@ public class Access implements Filter {
 		// TODO Auto-generated method stub
 		
 	}
+
 	
 }

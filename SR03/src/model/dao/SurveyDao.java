@@ -33,6 +33,37 @@ public class SurveyDao {
 	
 	public boolean getStatus(){ return status; }
 	
+	public static SurveyDao find(int id)
+	{
+		Connection cn 	= new DaoConnector().getConnection();
+		SurveyDao survey = null;
+		
+		try {
+			Statement stmt 	= (Statement) cn.createStatement();
+			String sql 		= "SELECT * FROM survey WHERE srv_id = " + Integer.toString(id);
+			ResultSet res 	= stmt.executeQuery(sql);
+			
+			if(res.next())
+			{
+				boolean status = (res.getInt("srv_status") == 1);
+				
+				survey = new SurveyDao(
+						res.getInt("srv_id"),
+						res.getInt("srv_idSubject"),
+						status
+						);
+			}
+			cn.close();
+			return survey;
+		} 
+		catch(SQLException e)
+		{
+			System.out.println("Error during the query SurveyDao.find(id)");
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	public static boolean delete(int i)
 	{
 		Connection cn = new DaoConnector().getConnection();

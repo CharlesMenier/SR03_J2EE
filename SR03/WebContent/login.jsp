@@ -11,7 +11,7 @@
 <body>
 
 	<div class="formulaire">
-		<form role="form" id="form_login" method="post" action="<%=application.getContextPath()%>/connexion">
+		<form role="form" id="form_login" method="post" action="<%=application.getContextPath()%>/connexion/login">
 		
 			<div class="form-group">
 				<label for="mail">Login</label>
