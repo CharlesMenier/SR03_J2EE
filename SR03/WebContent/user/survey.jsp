@@ -13,12 +13,6 @@
 </head>
 <body>
 
-	<ul class="nav nav-pills">
-		<li class="active"><a href="<%=application.getContextPath()%>/user/questionnaires">Questionnaires</a></li>
-		<li><a href="<%=application.getContextPath()%>/user/parcours">Parcours</a></li>
-		<li><a id="disconnect" class="btn btn-warning" href="<%=application.getContextPath()%>/connexion/logout">Déconnexion</a></li>
-	</ul>
-
 	<span class="error">${error}</span>
 
 	<table class="table table-bordered">
@@ -26,48 +20,26 @@
 			<tr>
 				<td>ID</td>
 				<td>Sujet</td>
-				<td colspan="3">Actif</td>
 			</tr>
 		</thead>
 		<tbody>
-			<c:forEach var="surveys" items="${surveys}">
+			<c:forEach var="survey" items="${surveys}">
 				<tr>
-					<td>${surveys.id}</td>
-					<td>${surveys.subject.name}</td>
-					<td>${surveys.status}</td>
+					<td>${survey.id}</td>
+					<td>${survey.subject.name}</td>
 					<td>
-						<a href="<%=application.getContextPath()%>/private/admin/questionnaires/edit/${surveys.id}">Modifier</a>
-					</td>
-					<td>
-						<a href="<%=application.getContextPath()%>/private/admin/questionnaires/delete/${surveys.id}">Supprimer</a>
+						<c:choose>
+							<c:when test="${survey.status}">
+								<a href="<%=application.getContextPath()%>/user/survey/answer/${survey.id}">Commencer</a>
+							</c:when>
+							<c:otherwise>Pas disponible</c:otherwise>
+						</c:choose>
 					</td>
 				</tr>
 			</c:forEach>
 		</tbody>
 	</table>
 	<br/>
-	
-	<div class="formulaire">
-		<form id="form_survey" method="POST" action="<%=application.getContextPath()%>/private/admin/questionnaires/add">
-		
-		<div class="form-group">
-			<label for="selectSubject">Sujet :</label>
-			<select class="form-control" id="selectSubject" name="selectSubject">
-	            <c:forEach var="subjects" items="${subjects}">
-	                <option value="${subjects.id}">${subjects.name}</option>
-	            </c:forEach>
-	        </select>
-        </div>
-		
-		<div class="form-group">
-			<label for="status">Actif :</label>        
-			<input class="form-control" type="checkbox" id="status" name="status"/>
-			<span class="erreur">${errors['status']}</span>
-		</div>
-			
-			<input class="btn btn-default" type="submit" value="Ajouter"/>
-		</form>
-	</div>
 
 </body>
 </html>

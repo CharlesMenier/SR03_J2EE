@@ -36,6 +36,30 @@ public class UserDao {
 	
 	public boolean isAdmin() { return isAdmin; }
 	
+	public int getId() {
+		return id;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getSociety() {
+		return society;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public Date getRegistration() {
+		return registration;
+	}
+
 	public static UserDao find(int id)
 	{
 		Connection cn 	= new DaoConnector().getConnection();

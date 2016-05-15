@@ -56,6 +56,11 @@
     <servlet-name>User</servlet-name>
     <servlet-class>controller.User</servlet-class>
   </servlet>
+  <servlet>
+  	<display-name>UserSurvey</display-name>
+  	<servlet-name>UserSurvey</servlet-name>
+  	<servlet-class>controller.UserSurvey</servlet-class>
+  </servlet>
   <servlet-mapping>
     <servlet-name>Connect</servlet-name>
     <url-pattern>/connexion/*</url-pattern>
@@ -75,5 +80,9 @@
   <servlet-mapping>
     <servlet-name>User</servlet-name>
     <url-pattern>/admin/utilisateurs/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>UserSurvey</servlet-name>
+    <url-pattern>/user/survey/*</url-pattern>
   </servlet-mapping>
 </web-app>
