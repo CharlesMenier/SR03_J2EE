@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 public class Router implements Filter {
 	
 	private static final Pattern URL_PATTERN = Pattern.compile("/SR03/([\\w\\.]+)/?([\\w\\.]+)?/?([\\w\\.]+)?/?([\\w\\.]+)?"); 
+	private static final String DEFAULT = "/login.jsp";	
 	
 	private HttpServletRequest req;
 	private HttpServletResponse resp;
@@ -46,7 +47,8 @@ public class Router implements Filter {
 		
 		if(!m.matches())
 		{
-			req.setAttribute("URL_ERROR", "L'url demandée est incorrecte");
+			req.setAttribute("error", "L'url demandée est incorrecte");
+			req.getRequestDispatcher(DEFAULT).forward(req, resp);
 		}
 		else
 		{
@@ -55,12 +57,16 @@ public class Router implements Filter {
 			ACTION		= m.group(3);
 			ID			= m.group(4);
 			
-			req.setAttribute("MODULE", MODULE);
-			req.setAttribute("CONTROLLER", CONTROLLER);
-			req.setAttribute("ACTION", ACTION);
-			req.setAttribute("ID", ID);
-			
-			chain.doFilter(req, resp);
+			if(MODULE == null) req.getRequestDispatcher(DEFAULT).forward(req, resp);
+			else
+			{
+				req.setAttribute("MODULE", MODULE);
+				req.setAttribute("CONTROLLER", CONTROLLER);
+				req.setAttribute("ACTION", ACTION);
+				req.setAttribute("ID", ID);
+				
+				chain.doFilter(req, resp);
+			}
 		}
 	}
 	

@@ -64,8 +64,9 @@ public class Connect extends Controller {
 			}
 			else
 			{
+				//req.getRequestDispatcher(DEFAULT_USER).forward(req, resp);
+				//resp.sendRedirect(req.getContextPath() + "/user/questionnaires");
 				System.out.println("******************" + req.getContextPath());
-//				req.getRequestDispatcher("/user/survey").forward(req, resp);
 				resp.sendRedirect("/SR03/user/user.jsp");
 				return;
 			}

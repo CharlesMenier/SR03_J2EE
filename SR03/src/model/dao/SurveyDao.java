@@ -125,11 +125,37 @@ public class SurveyDao {
 			
 			cn.close();
 			return list;
-		} catch(SQLException e)
+		} 
+		catch(SQLException e)
 		{
 			System.out.println("Query error : SurveyDao.findAll()");
 			e.printStackTrace();
 			return list;
 		}
 	}
+	
+	public static boolean update(int ID, int sID, int status)
+	{
+		Connection cn = new DaoConnector().getConnection();
+		boolean edited = false;
+		
+		try {
+			Statement stmt = (Statement)cn.createStatement();
+			String sql = "UPDATE survey SET srv_idSubject=" + sID + 
+					", srv_status=" + status + 
+					" WHERE srv_id=" + ID;
+			
+			if(stmt.executeUpdate(sql) > 0) edited = true;
+			
+			cn.close();
+			return edited;
+		} 
+		catch(SQLException e)
+		{
+			System.out.println("Query error : SurveyrDao.update()");
+			e.printStackTrace();
+			return edited;
+		}
+	}
+	
 }

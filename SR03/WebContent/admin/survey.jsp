@@ -1,7 +1,10 @@
+<%@page import="model.dao.UserDao"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
     
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
+<%@ page session="true" %>
     
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -15,8 +18,6 @@
 
 	<ul class="nav nav-pills">
 		<li class="active"><a href="<%=application.getContextPath()%>/admin/questionnaires">Gestion des questionnaires</a></li>
-		<li><a href="<%=application.getContextPath()%>/admin/questions">Gestion des questions</a></li>
-		<li><a href="<%=application.getContextPath()%>/admin/reponses">Gestion des réponses</a></li>
 		<li><a href="<%=application.getContextPath()%>/admin/utilisateurs">Gestion des utilisateurs</a></li>
 		<li><a id="disconnect" class="btn btn-warning" href="<%=application.getContextPath()%>/connexion/logout">Déconnexion</a></li>
 	</ul>
@@ -39,18 +40,58 @@
 					<td>${surveys.status}</td>
 					<td>
 						<a href="<%=application.getContextPath()%>/admin/questionnaires/edit/${surveys.id}">Modifier</a>
+						<br/>
+						<a href="<%=application.getContextPath()%>/admin/questions/show/${surveys.id}">Modifier questions</a>
 					</td>
-					<td>
-						<a href="<%=application.getContextPath()%>/admin/questionnaires/delete/${surveys.id}">Supprimer</a>
-					</td>
+					<td><a href="<%=application.getContextPath()%>/admin/questionnaires/delete/${surveys.id}">Supprimer</a></td>
 				</tr>
 			</c:forEach>
 		</tbody>
 	</table>
-	<br/>
 	
-	<div class="formulaire">
-		<form id="form_survey" method="POST" action="<%=application.getContextPath()%>/admin/questionnaires/add">
+	<c:if test="${!empty ID}">
+		<div class="formulaire float-left">
+			<div class="title">Edition questionnaire ${ID} :</div>
+			<form class="form" id="form_survey_edit" method="POST" action="<%=application.getContextPath()%>/admin/questionnaires/edit/${ID}">
+			
+			<div class="form-group">
+				<label for="selectSubject">Sujet :</label>
+				<select class="form-control" id="selectSubject_edit" name="selectSubject_edit">
+		            <c:forEach var="subjects" items="${subjects}">
+			            <c:choose>
+						    <c:when test="${subjects.id == survey.subject.id}">
+						        <option value="${subjects.id}" selected="true">${subjects.name}</option>
+						    </c:when>    
+						    <c:otherwise>
+						    	<option value="${subjects.id}">${subjects.name}</option>
+						    </c:otherwise>
+						</c:choose>
+		            </c:forEach>
+		        </select>
+	        </div>
+			
+			<div class="form-group">
+				<label for="status">Actif :</label>
+				<c:choose>
+				    <c:when test="${survey.status == true}">
+				        <input class="form-control" type="checkbox" id="status_edit" name="status_edit" checked="checked"/>
+				    </c:when>    
+				    <c:otherwise>
+				    	<input class="form-control" type="checkbox" id="status_edit" name="status_edit"/>
+				    </c:otherwise>
+				</c:choose>
+				
+				<span class="erreur">${errors['status']}</span>
+			</div>
+				
+				<input class="btn btn-default" type="submit" value="Modifier"/>
+			</form>
+		</div>
+	</c:if>
+	
+	<div class="formulaire float-right">
+		<div class="title">Ajout questionnaire :</div>
+		<form class="form" id="form_survey" method="POST" action="<%=application.getContextPath()%>/admin/questionnaires/add">
 		
 		<div class="form-group">
 			<label for="selectSubject">Sujet :</label>
@@ -69,6 +110,11 @@
 			
 			<input class="btn btn-default" type="submit" value="Ajouter"/>
 		</form>
+	</div>
+	
+	<div class="bottom-bar">
+		<div>${sessionScope.userSession.name}</div>
+		
 	</div>
 
 </body>
