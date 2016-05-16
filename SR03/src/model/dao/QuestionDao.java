@@ -1,148 +1,257 @@
 package model.dao;
 
-import java.security.KeyStore.PrivateKeyEntry;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sun.org.apache.xerces.internal.util.Status;
-import com.sun.org.apache.xml.internal.resolver.helpers.PublicId;
-import com.sun.xml.internal.bind.v2.model.core.ID;
-
-import controller.Connect;
-import controller.Question;
-
 public class QuestionDao implements Comparable<QuestionDao> {
+
 	private int id;
 	private SurveyDao survey;
 	private String label;
-	private boolean status;
 	private int number;
+	private boolean status;
 	
-	public QuestionDao() {}
-
-	public QuestionDao(int id, int survey, String label, boolean status, int number) {
-		super();
-		this.id = id;
-		this.survey = SurveyDao.find(survey);
-		this.label = label;
-		this.status = status;
-		this.number = number;
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public SurveyDao getSurvey() {
-		return survey;
-	}
-
-	public String getLabel() {
-		return label;
-	}
-
-	public boolean getStatus() {
-		return status;
-	}
-
-	public int getNumber() {
-		return number;
+	public QuestionDao(int i, int iS, String l, int n, boolean s)
+	{
+		id = i;
+		survey = SurveyDao.find(iS);
+		label = l;
+		number = n;
+		status = s;
 	}
 	
+	public int getId(){ return id; }
 	
-	public static QuestionDao find(int id) {
+	public SurveyDao getSurvey(){ return survey; }
+	
+	public int getNumber(){ return number; }
+	
+	public String getLabel(){ return label; }
+	
+	public boolean getStatus(){ return status; }
+	
+	public static QuestionDao find(int id)
+	{
+		Connection cn 	= new DaoConnector().getConnection();
 		QuestionDao question = null;
-		DaoConnector connector = new DaoConnector();
 		
 		try {
-			Statement statement = connector.getConnection().createStatement();
-			String sql = "SELECT * FROM question WHERE id=" + String.valueOf(id) + ";";
+			Statement stmt 	= (Statement) cn.createStatement();
+			String sql 		= "SELECT * FROM question WHERE qst_id = " + id;
+			ResultSet res 	= stmt.executeQuery(sql);
 			
-			ResultSet resultSet = statement.executeQuery(sql);
-			if (resultSet.next()) {
+			if(res.next())
+			{
+				boolean status = (res.getInt("qst_status") == 1);
+				
 				question = new QuestionDao(
-						resultSet.getInt("qst_id"), 
-						resultSet.getInt("qst_idSurvey"), 
-						resultSet.getString("qst_label"),
-						resultSet.getBoolean("qst_status"),
-						resultSet.getInt("qst_number"));
+						res.getInt("qst_id"),
+						res.getInt("qst_idSurvey"),
+						res.getString("qst_label"),
+						res.getInt("qst_number"),
+						status
+						);
 			}
-		} catch (SQLException e) {
+			cn.close();
+			return question;
+		} 
+		catch(SQLException e)
+		{
+			System.out.println("Error during the query QuestionDao.find(id)");
 			e.printStackTrace();
+			return null;
 		}
-		
-		connector.closeConection();
-		return question;
 	}
 	
-	
-	public static List<QuestionDao> findALL() {
-		List<QuestionDao> questions = new ArrayList<QuestionDao>();
-		DaoConnector connector = new DaoConnector();
+	public static boolean exist(int idSurvey, int number)
+	{
+		Connection cn 	= new DaoConnector().getConnection();
+		boolean exist = false;
 		
 		try {
-			Statement statement = connector.getConnection().createStatement();
-			String sql = "SELECT * FROM question;";
-		
-			ResultSet resultSet = statement.executeQuery(sql);
-			while (resultSet.next()) {
-				questions.add(new QuestionDao(
-						resultSet.getInt("qst_id"), 
-						resultSet.getInt("qst_idSurvey"), 
-						resultSet.getString("qst_label"),
-						resultSet.getBoolean("qst_status"),
-						resultSet.getInt("qst_number")));
-			}
+			Statement stmt 	= (Statement) cn.createStatement();
+			String sql 		= "SELECT * FROM question WHERE qst_idSurvey=" + idSurvey + ", qst_number=" + number;
+			ResultSet res 	= stmt.executeQuery(sql);
 			
-		} catch (SQLException e) {
+			if(res.next()) exist = true;
+			cn.close();
+			
+			return exist;
+		} 
+		catch(SQLException e)
+		{
+			System.out.println("Error during the query QuestionDao.exist()");
 			e.printStackTrace();
+			return exist;
 		}
-		
-		connector.closeConection();
-		return questions;
 	}
 	
-	public static List<QuestionDao> findALL(int surveyId) {
-		List<QuestionDao> questions = new ArrayList<QuestionDao>();
-		DaoConnector connector = new DaoConnector();
+	public static boolean hasCorrect(int id)
+	{
+		Connection cn 	= new DaoConnector().getConnection();
+		boolean exist = false;
 		
 		try {
-			Statement statement = connector.getConnection().createStatement();
-			String sql = "SELECT * FROM question WHERE qst_idSurvey=" + String.valueOf(surveyId) + ";";
+			Statement stmt 	= (Statement) cn.createStatement();
+			String sql 		= "SELECT * FROM answer WHERE asw_idQuestion=" + id + 
+								" AND asw_correct = 1";
+			ResultSet res 	= stmt.executeQuery(sql);
+			
+			if(res.next()) exist = true;
+			cn.close();
+			
+			return exist;
+		} 
+		catch(SQLException e)
+		{
+			System.out.println("Error during the query QuestionDao.hasCorrect()");
+			e.printStackTrace();
+			return exist;
+		}
+	}
+	
+	public static boolean delete(int i)
+	{
+		Connection cn = new DaoConnector().getConnection();
+		boolean deleted = false;
 		
-			ResultSet resultSet = statement.executeQuery(sql);
-			while (resultSet.next()) {
-				questions.add(new QuestionDao(
-						resultSet.getInt("qst_id"), 
-						resultSet.getInt("qst_idSurvey"), 
-						resultSet.getString("qst_label"),
-						resultSet.getBoolean("qst_status"),
-						resultSet.getInt("qst_number")));
+		try {
+			Statement stmt = (Statement)cn.createStatement();
+			String sql = "DELETE FROM question WHERE qst_id=" + i;
+			
+			if(stmt.executeUpdate(sql) > 0) deleted = true;
+			
+			cn.close();
+			return deleted;
+		} 
+		catch(SQLException e)
+		{
+			System.out.println("Query error : QuestionDao.delete(id)");
+			e.printStackTrace();
+			return deleted;
+		}
+	}
+	
+	public static boolean insert(int surveyID, String label, int number, int status)
+	{
+		Connection cn = new DaoConnector().getConnection();
+		boolean inserted = false;
+		
+		try {
+			Statement stmt = (Statement)cn.createStatement();
+			String sql = "INSERT INTO question(qst_idSurvey, qst_label, qst_number, qst_status) "
+					+ "VALUES('" + surveyID  + "','" + label + "', '" + number + "', '" + status + "')";
+			
+			if(stmt.executeUpdate(sql) > 0) inserted = true;
+			
+			cn.close();
+			return inserted;
+		} 
+		catch(SQLException e)
+		{
+			System.out.println("Query error : QuestionDao.insert()");
+			e.printStackTrace();
+			return inserted;
+		}
+	}
+	
+	public static List<QuestionDao> findAll()
+	{
+		Connection cn = new DaoConnector().getConnection();
+		List<QuestionDao> list = new ArrayList<QuestionDao>();
+		
+		try {
+			Statement stmt = (Statement)cn.createStatement();
+			String sql = "SELECT * FROM question";
+			ResultSet rs = stmt.executeQuery(sql);
+			
+			while(rs.next())
+			{
+				list.add(new QuestionDao(rs.getInt("qst_id"), 
+						rs.getInt("qst_idSurvey"), 
+						rs.getString("qst_label"),
+						rs.getInt("qst_number"),
+						rs.getBoolean("qst_status")));
 			}
 			
-		} catch (SQLException e) {
+			cn.close();
+			return list;
+		} 
+		catch(SQLException e)
+		{
+			System.out.println("Query error : QuestionDao.findAll()");
 			e.printStackTrace();
+			return list;
 		}
-		
-		connector.closeConection();
-		return questions;
 	}
-
+	
+	public static List<QuestionDao> findAll(int survey)
+	{
+		Connection cn = new DaoConnector().getConnection();
+		List<QuestionDao> list = new ArrayList<QuestionDao>();
+		
+		try {
+			Statement stmt = (Statement)cn.createStatement();
+			String sql = "SELECT * FROM question WHERE qst_idSurvey=" + survey;
+			ResultSet rs = stmt.executeQuery(sql);
+			
+			while(rs.next())
+			{
+				list.add(new QuestionDao(rs.getInt("qst_id"), 
+						rs.getInt("qst_idSurvey"), 
+						rs.getString("qst_label"),
+						rs.getInt("qst_number"),
+						rs.getBoolean("qst_status")));
+			}
+			
+			cn.close();
+			return list;
+		} 
+		catch(SQLException e)
+		{
+			System.out.println("Query error : QuestionDao.findAll()");
+			e.printStackTrace();
+			return list;
+		}
+	}
+	
+	public static boolean update(int ID, int sID, String label, int number, int status)
+	{
+		Connection cn = new DaoConnector().getConnection();
+		boolean edited = false;
+		
+		try {
+			Statement stmt = (Statement)cn.createStatement();
+			String sql = "UPDATE question " +
+					"SET qst_idSurvey=" + sID + 
+					", qst_label='" + label + 
+					"', qst_number=" + number +
+					", qst_status=" + status +
+					" WHERE qst_id=" + ID;
+			
+			if(stmt.executeUpdate(sql) > 0) edited = true;
+			
+			cn.close();
+			return edited;
+		} 
+		catch(SQLException e)
+		{
+			System.out.println("Query error : QuestionDao.update(id)");
+			e.printStackTrace();
+			return edited;
+		}
+	}
+	
 	@Override
-	public int compareTo(QuestionDao questionDao) {
-		// TODO Auto-generated method stub
-		if (this.id < questionDao.getId()) {
-			return 1;
-		} else if (this.id > questionDao.getId()) {
-			return -1;
-		} else {			
-			return 0;
-		}
+	public int compareTo(QuestionDao question)
+	{
+		if(id < question.getId()) return 1;
+		else if(id > question.getId()) return -1;
+		else return 0;
 	}
-	
-	
 	
 }

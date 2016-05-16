@@ -54,14 +54,7 @@ public class Access implements Filter {
 		MODULE		= (String)req.getAttribute("MODULE");
 		CONTROLLER	= (String)req.getAttribute("CONTROLLER");
 		ACTION		= (String)req.getAttribute("ACTION");
-		ID			= (String)req.getAttribute("ID");
-		
-		// We save the parameters into the session to keep it
-		/*session.setAttribute("MODULE", MODULE);
-		session.setAttribute("CONTROLLER", CONTROLLER);
-		session.setAttribute("ACTION", ACTION);
-		session.setAttribute("ID", ID);*/
-		
+		ID			= (String)req.getAttribute("ID");		
 		
 		// Allow access to resources and connection module
 		if(MODULE.equals(allow) || MODULE.equals("connexion"))
@@ -73,6 +66,7 @@ public class Access implements Filter {
 		// Not connected, we send the user back to the connection form
 		if(user == null)
 		{
+			req.setAttribute("error", "Vous n'êtes pas connecté");
 			req.getRequestDispatcher(DEFAULT_NOT_CONNECTED).forward(req, resp);
 			return;
 		}

@@ -6,23 +6,20 @@ import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import model.dao.SubjectDao;
 import model.dao.SurveyDao;
 
 @SuppressWarnings("serial")
 public class Survey extends Controller {
 	
-	private static final String PAGE 	= "/admin/survey.jsp"; 
-	private static final String URL		= "/admin/questionnaires";
-	
 	SurveyDao survey;
 	List<SurveyDao> surveys = null;
 	List<SubjectDao> subjects = null;
-	
+
 	protected void handleActions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
 	{
+		PAGE 	= "/admin/survey.jsp"; 
+		URL		= "/admin/questionnaires";
 		getInfos(req, resp);
 		
 		surveys = SurveyDao.findAll();
@@ -32,7 +29,11 @@ public class Survey extends Controller {
 		req.setAttribute("subjects", subjects);
 		
 		// When no action set, we just display the page
-		if(ACTION == null) defaultAction(req, resp);
+		if(ACTION == null)
+		{
+			defaultAction(req, resp);
+			return;
+		}
 		
 		switch(ACTION)
 		{
@@ -63,7 +64,22 @@ public class Survey extends Controller {
 				survey = SurveyDao.find(Integer.parseInt(ID));
 				req.setAttribute("survey", survey);
 				//resp.sendRedirect(req.getContextPath() + "/admin/questions/show/" + ID);
-				req.getRequestDispatcher("/admin/question.jsp").forward(req, resp);
+				req.getRequestDispatcher(PAGE).forward(req, resp);
+				return;
+			}
+			
+			if(POST)
+			{
+				String subject = req.getParameter("selectSubject_edit");
+				int status = (req.getParameter("status_edit") == null) ? 0 : 1 ;
+				
+				if(!SurveyDao.update(Integer.parseInt(ID), Integer.parseInt(subject), status))
+				{
+					req.setAttribute("error", "Erreur lors de l'édition");
+				}
+				
+				//req.getRequestDispatcher(PAGE).forward(req, resp);
+				resp.sendRedirect(req.getContextPath() + URL);;
 				return;
 			}
 			
