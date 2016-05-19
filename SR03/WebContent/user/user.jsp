@@ -4,20 +4,30 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<link href="<%=application.getContextPath()%>/resources/css/bootstrap.min.css" rel="stylesheet">
+<link href="<%=application.getContextPath()%>/resources/style.css" rel="stylesheet">
 <title>Utilisateur</title>
 </head>
 <body>
-<h3>User Information</h3>
+<ul class="nav nav-pills">
+	<li><a id="disconnect" class="btn btn-warning" href="<%=application.getContextPath()%>/connexion/logout">Déconnexion</a></li>
+</ul>
+
+<h1><span class="label label-default">Information</span></h1>
 <div>
-	<p>Username : ${sessionUser.name}</p>
-	<p>Email : ${sessionUser.mail}</p>
-	<p>Society : ${sessionUser.society}</p>
-	<p>Phone : ${sessionUser.phone }</p>
-	<p>Register Date : ${sessionUser.registration }</p>
+	<ul class="list-group">
+	  <li class="list-group-item"><span class="label label-info">Username : </span>${sessionUser.name}</li>
+	  <li class="list-group-item"><span class="label label-info">Email : </span>${sessionUser.mail}</li>
+	  <li class="list-group-item"><span class="label label-info">Societe : </span>${sessionUser.society}</li>
+	  <li class="list-group-item"><span class="label label-info">Tel : </span>${sessionUser.phone }</li>
+	  <li class="list-group-item"><span class="label label-info">Date : </span>${sessionUser.registration }</li>
+	</ul>
 </div>
 
-<div>
-	<a href="<%=application.getContextPath()%>/user/survey" id="ManageSurvey">Liste de questionnaires</a>
+<div class="btn-group btn-group-justified">
+  <a href="<%=application.getContextPath()%>/user/survey" class="btn btn-primary">Liste de questionnaires</a>
+  <a href="<%=application.getContextPath()%>/user/survey/history" class="btn btn-primary">Histoire</a>
 </div>
+
 </body>
 </html>

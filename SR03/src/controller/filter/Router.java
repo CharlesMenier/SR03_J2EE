@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 public class Router implements Filter {
 	
-	private static final Pattern URL_PATTERN = Pattern.compile("/SR03/([\\w\\.]+)/?([\\w\\.]+)?/?([\\w\\.]+)?/?([\\w\\.]+)?"); 
+	private static final Pattern URL_PATTERN = Pattern.compile("/SR03/([\\w\\.]+)/?([\\w\\.]+)?/?([\\w\\.]+)?/?([0-9]+)?"); 
 	private static final String DEFAULT = "/login.jsp";	
 	
 	private HttpServletRequest req;
@@ -42,7 +42,7 @@ public class Router implements Filter {
 		resp 	= (HttpServletResponse)response;
 		
 		URL	= req.getRequestURI();
-		
+		System.out.println(URL);
 		Matcher m = URL_PATTERN.matcher(URL);
 	
 		if(!m.matches())
