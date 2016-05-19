@@ -8,6 +8,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Utilisateurs</title>
+<script type="text/javascript" src="<%=application.getContextPath()%>/resources/jquery.min.js"></script>
 <link href="<%=application.getContextPath()%>/resources/css/bootstrap.min.css" rel="stylesheet">
 <link href="<%=application.getContextPath()%>/resources/style.css" rel="stylesheet">
 </head>
@@ -18,8 +19,6 @@
 		<li class="active"><a href="<%=application.getContextPath()%>/admin/utilisateurs">Gestion des utilisateurs</a></li>
 		<li><a id="disconnect" class="btn btn-warning" href="<%=application.getContextPath()%>/connexion/logout">Déconnexion</a></li>
 	</ul>
-
-	<span class="error">${error}</span>
 
 	<table class="table table-bordered">
 		<thead>
@@ -37,7 +36,7 @@
 		</thead>
 		<tbody>
 			<c:forEach var="users" items="${users}">
-				<tr>
+				<tr class="tr-user">
 					<td>${users.id}</td>
 					<td>${users.name}</td>
 					<td>${users.mail}</td>
@@ -54,6 +53,10 @@
 			</c:forEach>
 		</tbody>
 	</table>
+	<button id="prev-user" class="btn btn-default">Précédent</button>
+	<button id="next-user" class="btn btn-default">Suivant</button>
+	
+	<span class="error">${error}</span>
 	
 	<c:if test="${!empty ID && ACTION == 'edit'}">
 		<div class="formulaire float-left">
@@ -134,6 +137,42 @@
 			<input class="btn btn-default" type="submit" value="Ajouter"/>
 		</form>
 	</div>
+
+	<script type="text/javascript">
+	$(function() {
+		  var items = $(".tr-user");
+		  var numItems = items.length;
+		  var perPage = 2;
+		  var current = 0;
+		  var numPage = (numItems / perPage) - 1;
+		  
+		  items.slice(perPage).hide();
+		  
+		  $('#prev-user').on('click', function(){
+			  	if(current > 0)
+				{
+			  		current--;
+			  		update();
+				}
+		  });
+		  
+		  $('#next-user').on('click', function(){
+			  	if(current < numPage)
+				{
+			  		current++;
+			  		update();
+				}
+		  });
+		  
+		  function update()
+		  {
+			  var showFrom = perPage * (current);
+		      var showTo = showFrom + perPage;
+		      items.hide();
+		      items.slice(showFrom, showTo).show();
+		  }
+		});
+	</script>
 
 </body>
 </html>

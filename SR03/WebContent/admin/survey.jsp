@@ -11,6 +11,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Questionnaires</title>
+<script type="text/javascript" src="<%=application.getContextPath()%>/resources/jquery.min.js"></script>
 <link href="<%=application.getContextPath()%>/resources/css/bootstrap.min.css" rel="stylesheet">
 <link href="<%=application.getContextPath()%>/resources/style.css" rel="stylesheet">
 </head>
@@ -22,8 +23,6 @@
 		<li><a id="disconnect" class="btn btn-warning" href="<%=application.getContextPath()%>/connexion/logout">Déconnexion</a></li>
 	</ul>
 
-	<span class="error">${error}</span>
-
 	<table class="table table-bordered">
 		<thead>
 			<tr>
@@ -34,7 +33,7 @@
 		</thead>
 		<tbody>
 			<c:forEach var="surveys" items="${surveys}">
-				<tr>
+				<tr class="tr-survey">
 					<td>${surveys.id}</td>
 					<td>${surveys.subject.name}</td>
 					<td>${surveys.status}</td>
@@ -48,6 +47,10 @@
 			</c:forEach>
 		</tbody>
 	</table>
+	<button id="prev-survey" class="btn btn-default">Précédent</button>
+	<button id="next-survey" class="btn btn-default">Suivant</button>
+	
+	<span class="error">${error}</span>
 	
 	<c:if test="${!empty ID}">
 		<div class="formulaire float-left">
@@ -112,10 +115,41 @@
 		</form>
 	</div>
 	
-	<div class="bottom-bar">
-		<div>${sessionScope.userSession.name}</div>
-		
-	</div>
-
+	<script type="text/javascript">
+	$(function() {
+		  var items = $(".tr-survey");
+		  var numItems = items.length;
+		  var perPage = 2;
+		  var current = 0;
+		  var numPage = (numItems / perPage) - 1;
+		  
+		  items.slice(perPage).hide();
+		  
+		  $('#prev-survey').on('click', function(){
+			  	if(current > 0)
+				{
+			  		current--;
+			  		update();
+				}
+		  });
+		  
+		  $('#next-survey').on('click', function(){
+			  	if(current < numPage)
+				{
+			  		current++;
+			  		update();
+				}
+		  });
+		  
+		  function update()
+		  {
+			  var showFrom = perPage * (current);
+		      var showTo = showFrom + perPage;
+		      items.hide();
+		      items.slice(showFrom, showTo).show();
+		  }
+		});
+	</script>
+	
 </body>
 </html>

@@ -74,7 +74,7 @@ public class QuestionDao implements Comparable<QuestionDao> {
 		
 		try {
 			Statement stmt 	= (Statement) cn.createStatement();
-			String sql 		= "SELECT * FROM question WHERE qst_idSurvey=" + idSurvey + ", qst_number=" + number;
+			String sql 		= "SELECT * FROM question WHERE qst_idSurvey=" + idSurvey + " AND qst_number=" + number;
 			ResultSet res 	= stmt.executeQuery(sql);
 			
 			if(res.next()) exist = true;

@@ -79,7 +79,7 @@ public class AnswerDao implements Comparable<AnswerDao> {
 		
 		try {
 			Statement stmt 	= (Statement) cn.createStatement();
-			String sql 		= "SELECT * FROM answer WHERE asw_idQuestion=" + idQuestion + ", asw_number=" + number;
+			String sql 		= "SELECT * FROM answer WHERE asw_idQuestion=" + idQuestion + " AND asw_number=" + number;
 			ResultSet res 	= stmt.executeQuery(sql);
 			
 			System.out.println(sql);

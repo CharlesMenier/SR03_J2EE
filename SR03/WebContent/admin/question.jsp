@@ -8,6 +8,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Questions</title>
+<script type="text/javascript" src="<%=application.getContextPath()%>/resources/jquery.min.js"></script>
 <link href="<%=application.getContextPath()%>/resources/css/bootstrap.min.css" rel="stylesheet">
 <link href="<%=application.getContextPath()%>/resources/style.css" rel="stylesheet">
 </head>
@@ -18,8 +19,6 @@
 		<li><a href="<%=application.getContextPath()%>/admin/utilisateurs">Gestion des utilisateurs</a></li>
 		<li><a id="disconnect" class="btn btn-warning" href="<%=application.getContextPath()%>/connexion/logout">Déconnexion</a></li>
 	</ul>
-	
-	<span class="error">${error}</span>
 
 	<table class="table table-bordered">
 		<thead>
@@ -33,7 +32,7 @@
 		</thead>
 		<tbody>
 			<c:forEach var="questions" items="${questions}">
-				<tr>
+				<tr class="tr-question">
 					<td>${questions.id}</td>
 					<td>${questions.survey.id}</td>
 					<td>${questions.label}</td>
@@ -49,6 +48,10 @@
 			</c:forEach>
 		</tbody>
 	</table>
+	<button id="prev-question" class="btn btn-default">Précédent</button>
+	<button id="next-question" class="btn btn-default">Suivant</button>
+	
+	<span class="error">${error}</span>
 	
 	<c:if test="${!empty ID && ACTION == 'edit'}">
 		<div class="formulaire float-left">
@@ -123,6 +126,42 @@
 	</div>
 
 	<a href="<%=application.getContextPath()%>/admin/questionnaires" class="btn btn-default">Retour</a>
+	
+	<script type="text/javascript">
+	$(function() {
+		  var items = $(".tr-question");
+		  var numItems = items.length;
+		  var perPage = 2;
+		  var current = 0;
+		  var numPage = (numItems / perPage) - 1;
+		  
+		  items.slice(perPage).hide();
+		  
+		  $('#prev-question').on('click', function(){
+			  	if(current > 0)
+				{
+			  		current--;
+			  		update();
+				}
+		  });
+		  
+		  $('#next-question').on('click', function(){
+			  	if(current < numPage)
+				{
+			  		current++;
+			  		update();
+				}
+		  });
+		  
+		  function update()
+		  {
+			  var showFrom = perPage * (current);
+		      var showTo = showFrom + perPage;
+		      items.hide();
+		      items.slice(showFrom, showTo).show();
+		  }
+		});
+	</script>
 
 </body>
 </html>
