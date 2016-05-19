@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import model.dao.AnswerDao;
 import model.dao.QuestionDao;
 
 @SuppressWarnings("serial")
@@ -99,12 +100,9 @@ public class Question extends Controller {
 				{
 					req.setAttribute("error", "Une autre question porte déjà ce numéro");
 				}
-				else
+				else if(!QuestionDao.update(Integer.parseInt(ID), survey, label, number, status))
 				{
-					if(!QuestionDao.update(Integer.parseInt(ID), survey, label, number, status))
-					{
-						req.setAttribute("error", "Erreur lors de l'édition");
-					}
+					req.setAttribute("error", "Erreur lors de l'édition");
 				}
 				
 				resp.sendRedirect(req.getContextPath() + URL + SURVEY);
@@ -136,7 +134,11 @@ public class Question extends Controller {
 		int number = Integer.parseInt(req.getParameter("number"));
 		int status = (req.getParameter("status") == null) ? 0 : 1;
 		
-		if(!QuestionDao.insert(survey, label, number, status))
+		if(QuestionDao.exist(survey, number))
+		{
+			req.setAttribute("error", "Une autre question porte déjà ce numéro");
+		}
+		else if(!QuestionDao.insert(survey, label, number, status))
 		{
 			req.setAttribute("error", "Erreur lors de l'ajout");
 		}

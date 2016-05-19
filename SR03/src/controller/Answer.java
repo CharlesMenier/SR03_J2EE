@@ -101,7 +101,7 @@ public class Answer extends Controller {
 				
 				if(AnswerDao.exist(question, number))
 				{
-					req.setAttribute("error", "Une autre question porte déjà ce numéro");
+					req.setAttribute("error", "Une autre réponse porte déjà ce numéro");
 				}
 				else if(QuestionDao.hasCorrect(question) && correct == 1)
 				{
@@ -143,7 +143,15 @@ public class Answer extends Controller {
 		int correct = (req.getParameter("correct") == null) ? 0 : 1;
 		int status = (req.getParameter("status") == null) ? 0 : 1;
 		
-		if(!AnswerDao.insert(question, label, number, correct, status))
+		if(AnswerDao.exist(question, number))
+		{
+			req.setAttribute("error", "Une autre réponse porte déjà ce numéro");
+		}
+		else if(QuestionDao.hasCorrect(question) && correct == 1)
+		{
+			req.setAttribute("error", "Cette question a déjà une réponse correcte");
+		}
+		else if(!AnswerDao.insert(question, label, number, correct, status))
 		{
 			req.setAttribute("error", "Erreur lors de l'ajout");
 		}

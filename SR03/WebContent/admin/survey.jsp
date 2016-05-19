@@ -23,8 +23,6 @@
 		<li><a id="disconnect" class="btn btn-warning" href="<%=application.getContextPath()%>/connexion/logout">Déconnexion</a></li>
 	</ul>
 
-	<span class="error">${error}</span>
-
 	<table class="table table-bordered">
 		<thead>
 			<tr>
@@ -51,6 +49,8 @@
 	</table>
 	<button id="prev-survey" class="btn btn-default">Précédent</button>
 	<button id="next-survey" class="btn btn-default">Suivant</button>
+	
+	<span class="error">${error}</span>
 	
 	<c:if test="${!empty ID}">
 		<div class="formulaire float-left">

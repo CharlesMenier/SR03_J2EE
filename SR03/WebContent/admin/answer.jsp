@@ -49,7 +49,9 @@
 	<button id="prev-answer" class="btn btn-default">Précédent</button>
 	<button id="next-answer" class="btn btn-default">Suivant</button>
 	
-	<c:if test="${!empty ID && action == 'edit'}">
+	<span class="error">${error}</span>
+	
+	<c:if test="${!empty ID && ACTION == 'edit'}">
 		<div class="formulaire float-left">
 			<div class="title">Edition réponse ${ID} :</div>
 			<form class="form" id="form_answer_edit" method="POST" action="<%=application.getContextPath()%>/admin/reponses/edit/${ID}">
