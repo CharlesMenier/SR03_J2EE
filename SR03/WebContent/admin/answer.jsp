@@ -8,6 +8,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Réponses</title>
+<script type="text/javascript" src="<%=application.getContextPath()%>/resources/jquery.min.js"></script>
 <link href="<%=application.getContextPath()%>/resources/css/bootstrap.min.css" rel="stylesheet">
 <link href="<%=application.getContextPath()%>/resources/style.css" rel="stylesheet">
 </head>
@@ -32,7 +33,7 @@
 		</thead>
 		<tbody>
 			<c:forEach var="answers" items="${answers}">
-				<tr>
+				<tr class="tr-answer">
 					<td>${answers.id}</td>
 					<td>${answers.question.id}</td>
 					<td>${answers.label}</td>
@@ -45,6 +46,8 @@
 			</c:forEach>
 		</tbody>
 	</table>
+	<button id="prev-answer" class="btn btn-default">Précédent</button>
+	<button id="next-answer" class="btn btn-default">Suivant</button>
 	
 	<c:if test="${!empty ID && action == 'edit'}">
 		<div class="formulaire float-left">
@@ -131,6 +134,42 @@
 	<div class="error">${error}</div>
 	
 	<a href="<%=application.getContextPath()%>/admin/questions/show/${SURVEY}" class="btn btn-default">Retour</a>
+	
+	<script type="text/javascript">
+	$(function() {
+		  var items = $(".tr-answer");
+		  var numItems = items.length;
+		  var perPage = 2;
+		  var current = 0;
+		  var numPage = (numItems / perPage) - 1;
+		  
+		  items.slice(perPage).hide();
+		  
+		  $('#prev-answer').on('click', function(){
+			  	if(current > 0)
+				{
+			  		current--;
+			  		update();
+				}
+		  });
+		  
+		  $('#next-answer').on('click', function(){
+			  	if(current < numPage)
+				{
+			  		current++;
+			  		update();
+				}
+		  });
+		  
+		  function update()
+		  {
+			  var showFrom = perPage * (current);
+		      var showTo = showFrom + perPage;
+		      items.hide();
+		      items.slice(showFrom, showTo).show();
+		  }
+		});
+	</script>
 
 </body>
 </html>
