@@ -44,7 +44,7 @@ public class Router implements Filter {
 		URL	= req.getRequestURI();
 		
 		Matcher m = URL_PATTERN.matcher(URL);
-		
+	
 		if(!m.matches())
 		{
 			req.setAttribute("error", "L'url demandée est incorrecte");
