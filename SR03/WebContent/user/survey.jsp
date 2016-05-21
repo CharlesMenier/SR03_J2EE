@@ -8,6 +8,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Questionnaires</title>
+<script type="text/javascript" src="<%=application.getContextPath()%>/resources/jquery.min.js"></script>
 <link href="<%=application.getContextPath()%>/resources/css/bootstrap.min.css" rel="stylesheet">
 <link href="<%=application.getContextPath()%>/resources/style.css" rel="stylesheet">
 </head>
@@ -25,10 +26,10 @@
 			<label for="selectSubject">Sujet :</label>
 			<select class="form-control" id="selectSubject" name="selectSubject">
 				<option value="default" ></option>
+				<fmt:parseNumber var="subejctId" type="number" value="${selectedSubject}" />
 	            <c:forEach var="subject" items="${subjects}">
-	            	<fmt:parseNumber var="subejctId" type="number" value="${selectedSubject}" />
 	            	<c:choose>
-	            		<c:when test="${subjectId eq subject.id }">
+	            		<c:when test="${subject.id eq subejctId}">
 	            			<option value="${subject.id }" selected>${subject.name }</option>
 	          	  		</c:when>
 	          	  		<c:otherwise>
@@ -54,7 +55,7 @@
 		</thead>
 		<tbody>
 			<c:forEach var="survey" items="${surveys}">
-				<tr>
+				<tr class="tr-survey">
 					<td>${survey.id}</td>
 					<td>${survey.subject.name}</td>
 					<td>
@@ -73,31 +74,52 @@
 	
 	<ul class="pagination">
 		<%
-			int pageNumber = (int) request.getAttribute("pageNum");
-			int currentPage = (int) request.getAttribute("currentPage");
+			int pageNumber = (Integer) request.getAttribute("pageNum");
+			int currentPage = (Integer) request.getAttribute("currentPage");
 			String selectedSubject = (String) request.getAttribute("selectedSubject");
 			System.out.println("currentPage : " +currentPage);
 			System.out.println("pageNumber : " + String.valueOf(pageNumber));
-			String url = "";
-			if (selectedSubject.equals("default")) {
-				url = request.getContextPath() + "/user/survey?curPage=";
-			} else {
-				url = request.getContentType() + "/user/survey/search/" + selectedSubject + "?curPage=";
-			}
 			for (int i=1; i<=pageNumber; i++) {
-				if (i == currentPage) {
-					out.println("<li class=\"active\"><a = href=\"" + url + String.valueOf(i) + "\">" + 
-						String.valueOf(currentPage) + "</a></li>");
-				} else {
-					out.println("<li><a = href=\"" + url + String.valueOf(i) + "\">" + 
-							String.valueOf(currentPage) + "</a></li>");	
-				}
+				out.println("<li id=\"" + String.valueOf(i) + "\" class=\"li-page\"><a>" + String.valueOf(i) + "</a></li>");
 			}
 		%>
+
+		
 	</ul>
 	<br/>
 	
 	<a href="<%=application.getContextPath()%>/user/user.jsp" class="btn btn-success" role="button">Retourner</a>
 	
+	<script type="text/javascript">
+	$(function() {
+		  var items = $(".tr-survey");
+		  var numItems = items.length;
+		  var perPage = 5;
+		  var numPage = Math.ceil(numItems / perPage);
+		  var current = 1;
+		  var pageItems = $(".li-page");
+		  items.slice(perPage).hide();
+		  $("#" + current).addClass("active");
+		  for (i=1; i<=numPage; i++) {
+			  $("#" + i).on("click", function() {
+				  update($(this).attr("id"));
+			  });
+		  }		  
+		  
+		  function update(pageNumber)
+		  {
+			  var showFrom = perPage * (pageNumber-1);
+		      var showTo = showFrom + perPage;
+		      if (showTo > numItems) {
+		    	  showTo = numItems;
+		      }
+		      items.hide();
+		      items.slice(showFrom, showTo).show();
+		      $("#" + current).removeClass("active");
+		      $("#" + pageNumber).addClass("active");
+		      current = pageNumber;
+		  }
+		});
+	</script>
 </body>
 </html>

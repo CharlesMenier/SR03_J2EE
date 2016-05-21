@@ -48,16 +48,10 @@ public class UserSurvey extends Controller {
 			} else {
 				currentPage = Integer.parseInt(curPage);
 			}
-			ArrayList<SurveyDao> shownSurveys = new ArrayList<SurveyDao>();
-			for (int i=5*(currentPage-1); i<5*currentPage; i++) {
-				if (i < surveys.size()) {
-					shownSurveys.add(surveys.get(i));
-				}
-			}
 				
 			req.setAttribute("pageNum", surveys.size()/5 + 1);
 			req.setAttribute("currentPage", currentPage);
-			req.setAttribute("surveys", shownSurveys);
+			req.setAttribute("surveys", surveys);
 			req.setAttribute("subjects", subjects);
 			req.setAttribute("selectedSubject", "defaut");
 			req.getRequestDispatcher("/user/survey.jsp").forward(req, resp);
@@ -73,13 +67,8 @@ public class UserSurvey extends Controller {
 				surveyHistory(req, resp);
 				break;
 			case "search":
-				System.out.println(req.getParameter("selectSubject"));
-				String subjectId;
-				if (ID != null) {
-					subjectId = ID;
-				} else {
-					subjectId = (String) req.getParameter("selectSubject");
-				}
+				subjects = SubjectDao.findAll();
+				String subjectId = (String) req.getParameter("selectSubject");
 				if (subjectId.equals("default")) {
 					surveys = SurveyDao.findAll();
 				} else {
@@ -95,16 +84,10 @@ public class UserSurvey extends Controller {
 				} else {
 					currentPage = Integer.parseInt(curPage);
 				}
-				ArrayList<SurveyDao> shownSurveys = new ArrayList<SurveyDao>();
-				for (int i=5*(currentPage-1); i<5*currentPage; i++) {
-					if (i < surveys.size()) {
-						shownSurveys.add(surveys.get(i));
-					}
-				}
 				
 				req.setAttribute("pageNum", surveys.size()/5 + 1);
 				req.setAttribute("currentPage", currentPage);
-				req.setAttribute("surveys", shownSurveys);
+				req.setAttribute("surveys", surveys);
 				req.setAttribute("subjects", subjects);
 				req.setAttribute("selectedSubject", String.valueOf(subjectId));
 				req.getRequestDispatcher("/user/survey.jsp").forward(req, resp);
