@@ -8,7 +8,6 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Questionnaires</title>
-<script type="text/javascript" src="<%=application.getContextPath()%>/resources/jquery.min.js"></script>
 <link href="<%=application.getContextPath()%>/resources/css/bootstrap.min.css" rel="stylesheet">
 <link href="<%=application.getContextPath()%>/resources/style.css" rel="stylesheet">
 </head>
@@ -26,10 +25,10 @@
 			<label for="selectSubject">Sujet :</label>
 			<select class="form-control" id="selectSubject" name="selectSubject">
 				<option value="default" ></option>
-				<fmt:parseNumber var="subejctId" type="number" value="${selectedSubject}" />
 	            <c:forEach var="subject" items="${subjects}">
+	            	<fmt:parseNumber var="subejctId" type="number" value="${selectedSubject}" />
 	            	<c:choose>
-	            		<c:when test="${subject.id eq subejctId}">
+	            		<c:when test="${subjectId eq subject.id }">
 	            			<option value="${subject.id }" selected>${subject.name }</option>
 	          	  		</c:when>
 	          	  		<c:otherwise>
@@ -60,6 +59,9 @@
 					<td>${survey.subject.name}</td>
 					<td>
 						<c:choose>
+							<c:when test="${survey.done}">
+								Questionnaire déjà fait
+							</c:when>
 							<c:when test="${survey.status}">
 								<a href="<%=application.getContextPath()%>/user/survey/answer/${survey.id}">Commencer</a>
 							</c:when>
@@ -71,28 +73,10 @@
 		</tbody>
 	</table>
 	
-<<<<<<< HEAD
 	<button id="prev-survey" class="btn btn-default">Précédent</button>
 	<button id="next-survey" class="btn btn-default">Suivant</button>
 	
 	<a href="<%=application.getContextPath()%>/user/user.jsp" class="btn btn-success" role="button">Retour</a>
-=======
-	<ul class="pagination">
-		<%
-			int pageNumber = (Integer) request.getAttribute("pageNum");
-			int currentPage = (Integer) request.getAttribute("currentPage");
-			String selectedSubject = (String) request.getAttribute("selectedSubject");
-			System.out.println("currentPage : " +currentPage);
-			System.out.println("pageNumber : " + String.valueOf(pageNumber));
-			for (int i=1; i<=pageNumber; i++) {
-				out.println("<li id=\"" + String.valueOf(i) + "\" class=\"li-page\"><a>" + String.valueOf(i) + "</a></li>");
-			}
-		%>
-
-		
-	</ul>
-	<br/>
->>>>>>> 7c6e52100ec3693ed26a7a8f6a86d0ee88c65c45
 	
 	<script type="text/javascript">
 	$(function() {
@@ -130,36 +114,5 @@
 		});
 	</script>
 	
-	<script type="text/javascript">
-	$(function() {
-		  var items = $(".tr-survey");
-		  var numItems = items.length;
-		  var perPage = 5;
-		  var numPage = Math.ceil(numItems / perPage);
-		  var current = 1;
-		  var pageItems = $(".li-page");
-		  items.slice(perPage).hide();
-		  $("#" + current).addClass("active");
-		  for (i=1; i<=numPage; i++) {
-			  $("#" + i).on("click", function() {
-				  update($(this).attr("id"));
-			  });
-		  }		  
-		  
-		  function update(pageNumber)
-		  {
-			  var showFrom = perPage * (pageNumber-1);
-		      var showTo = showFrom + perPage;
-		      if (showTo > numItems) {
-		    	  showTo = numItems;
-		      }
-		      items.hide();
-		      items.slice(showFrom, showTo).show();
-		      $("#" + current).removeClass("active");
-		      $("#" + pageNumber).addClass("active");
-		      current = pageNumber;
-		  }
-		});
-	</script>
 </body>
 </html>

@@ -13,14 +13,14 @@
 	<li><a id="disconnect" class="btn btn-warning" href="<%=application.getContextPath()%>/connexion/logout">Déconnexion</a></li>
 </ul>
 
-<h1><span class="label label-info">Information</span></h1>
+<h1><span class="label label-default">Information</span></h1>
 <div>
 	<ul class="list-group">
-	  <li class="list-group-item"><span class="label label-default">Username : </span>${sessionUser.name}</li>
-	  <li class="list-group-item"><span class="label label-default">Email : </span>${sessionUser.mail}</li>
-	  <li class="list-group-item"><span class="label label-default">Societe : </span>${sessionUser.society}</li>
-	  <li class="list-group-item"><span class="label label-default">Tel : </span>${sessionUser.phone }</li>
-	  <li class="list-group-item"><span class="label label-default">Date : </span>${sessionUser.registration }</li>
+	  <li class="list-group-item"><span class="label label-info">Username : </span>${sessionUser.name}</li>
+	  <li class="list-group-item"><span class="label label-info">Email : </span>${sessionUser.mail}</li>
+	  <li class="list-group-item"><span class="label label-info">Societe : </span>${sessionUser.society}</li>
+	  <li class="list-group-item"><span class="label label-info">Tel : </span>${sessionUser.phone }</li>
+	  <li class="list-group-item"><span class="label label-info">Date : </span>${sessionUser.registration }</li>
 	</ul>
 </div>
 

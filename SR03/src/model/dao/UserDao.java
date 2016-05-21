@@ -234,6 +234,29 @@ public class UserDao {
 		}
 	}
 	
+	public boolean hasDoneSurvey(int id)
+	{
+		Connection cn = new DaoConnector().getConnection();
+		boolean done = false;
+		
+		try {
+			Statement stmt = (Statement)cn.createStatement();
+			String sql = "SELECT * FROM course WHERE crs_idUser=" + this.id + " AND crs_idSurvey=" + id;
+			ResultSet rs = stmt.executeQuery(sql);
+			
+			if(rs.next()) done = true;
+			
+			cn.close();
+			return done;
+		} 
+		catch(SQLException e)
+		{
+			System.out.println("Query error : UserDao.update()");
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
 	
 	public static String generatePassword(int length)
 	{

@@ -28,7 +28,7 @@
 						<c:forEach var="questions" items="${questions }">
 							<li class="list-group-item">
 								<label class="label label-info">${questions.label }</label>
-								<select class="form-control" multiple="multiple" id="question${questions.id }" name="${questions.label }">
+								<select class="form-control" id="question${questions.id }" name="${questions.label }">
 								<c:forEach var="answers" items="${questions.answers }">
 									<option value="${answers.id }">${answers.label }</option>
 								</c:forEach>

@@ -118,29 +118,32 @@ public class CourseDao {
 	}
 	
 	
-	public static boolean insert(int id, int userId, int surveyId, int score, Time time) {
+	public static int insert(int userId, int surveyId, int score, Time time) {
 		Connection connection= new DaoConnector().getConnection();
-		boolean inserted = false;
+		int key = 0;
 		
 		try {
-			String sql = "INSERT INTO course (crs_id, crs_idUser, crs_idSurvey, crs_score, crs_time) VALUES (?,?,?,?,?)";
-			PreparedStatement preparedStatement = connection.prepareStatement(sql);
-			preparedStatement.setInt(1, id);
-			preparedStatement.setInt(2, userId);
-			preparedStatement.setInt(3, surveyId);
-			preparedStatement.setInt(4, score);
-			preparedStatement.setTime(5, time);
-			System.out.println(preparedStatement);
-			if(preparedStatement.executeUpdate() > 0) inserted = true;
+			String sql = "INSERT INTO course(crs_idUser, crs_idSurvey, crs_score, crs_time) VALUES (?,?,?,?)";
+			PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			preparedStatement.setInt(1, userId);
+			preparedStatement.setInt(2, surveyId);
+			preparedStatement.setInt(3, score);
+			preparedStatement.setTime(4, time);
+			
+			if(preparedStatement.executeUpdate() > 0)
+			{
+				ResultSet keys = preparedStatement.getGeneratedKeys();
+				if(keys.next()) key = keys.getInt(1);
+			}
 			
 			connection.close();
-			return inserted;
+			return key;
 		} 
 		catch(SQLException e)
 		{
 			System.out.println("Query error : AnswerDao.insert()");
 			e.printStackTrace();
-			return inserted;
+			return 0;
 		}
 	}
 	
@@ -170,7 +173,7 @@ public class CourseDao {
 			return updated;
 		}
 	}
-	
+
 	
 	
 	public static int size() {

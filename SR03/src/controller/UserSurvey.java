@@ -2,12 +2,14 @@ package controller;
 
 import java.io.IOException;
 import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.SimpleFormatter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -31,31 +33,24 @@ public class UserSurvey extends Controller {
 		List<SurveyDao> surveys = null;
 		List<SubjectDao> subjects = null;
 		
+		UserDao user = (UserDao)req.getSession().getAttribute(Controller.USER_SESSION);
 		
-		if (ACTION == null) 
+		if (ACTION == null && user != null) 
 		{
 			// Display all surveys
-			surveys = SurveyDao.findAll();
+			surveys = SurveyDao.findAllForUser(user);
 			subjects = SubjectDao.findAll();
 			
 			if (surveys.isEmpty() || subjects.isEmpty()) 
 			{
 				req.setAttribute("error", "Pas de questionnaire");
 			}
-<<<<<<< HEAD
 			
-=======
-			String curPage = req.getParameter("curPage");
-			int currentPage;
-			if (curPage == null) {
-				currentPage = 1;
-			} else {
-				currentPage = Integer.parseInt(curPage);
+			for(SurveyDao srv : surveys)
+			{
+				System.out.println(srv.toString());
 			}
-				
-			req.setAttribute("pageNum", surveys.size()/5 + 1);
-			req.setAttribute("currentPage", currentPage);
->>>>>>> 7c6e52100ec3693ed26a7a8f6a86d0ee88c65c45
+			
 			req.setAttribute("surveys", surveys);
 			req.setAttribute("subjects", subjects);
 			req.setAttribute("selectedSubject", "defaut");
@@ -72,8 +67,13 @@ public class UserSurvey extends Controller {
 				surveyHistory(req, resp);
 				break;
 			case "search":
-				subjects = SubjectDao.findAll();
-				String subjectId = (String) req.getParameter("selectSubject");
+				System.out.println(req.getParameter("selectSubject"));
+				String subjectId;
+				if (ID != null) {
+					subjectId = ID;
+				} else {
+					subjectId = (String) req.getParameter("selectSubject");
+				}
 				if (subjectId.equals("default")) {
 					surveys = SurveyDao.findAll();
 				} else {
@@ -89,10 +89,16 @@ public class UserSurvey extends Controller {
 				} else {
 					currentPage = Integer.parseInt(curPage);
 				}
+				ArrayList<SurveyDao> shownSurveys = new ArrayList<SurveyDao>();
+				for (int i=5*(currentPage-1); i<5*currentPage; i++) {
+					if (i < surveys.size()) {
+						shownSurveys.add(surveys.get(i));
+					}
+				}
 				
 				req.setAttribute("pageNum", surveys.size()/5 + 1);
 				req.setAttribute("currentPage", currentPage);
-				req.setAttribute("surveys", surveys);
+				req.setAttribute("surveys", shownSurveys);
 				req.setAttribute("subjects", subjects);
 				req.setAttribute("selectedSubject", String.valueOf(subjectId));
 				req.getRequestDispatcher("/user/survey.jsp").forward(req, resp);
@@ -128,11 +134,12 @@ public class UserSurvey extends Controller {
 		
 		// TODO
 		// add a course
-		UserDao user = (UserDao) req.getSession().getAttribute(Controller.USER_SESSION);
-		int courseId = CourseDao.size() + 1;
+		/*UserDao user = (UserDao) req.getSession().getAttribute(Controller.USER_SESSION);
 		Time time = new Time(new Date().getTime());
-		CourseDao.insert(courseId, user.getId(), Integer.valueOf(ID), 0, time);
-		req.getSession().setAttribute("courseId", courseId);
+		CourseDao.insert(user.getId(), Integer.valueOf(ID), 0, time);
+		req.getSession().setAttribute("courseId", courseId);*/
+		
+		req.getSession().setAttribute("courseStart", new Date().getTime());
 		
 		req.getRequestDispatcher("/user/answerSurvey.jsp").forward(req, resp);
 	}
@@ -140,35 +147,46 @@ public class UserSurvey extends Controller {
 	
 	
 	public void checkAnswer(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		int surveyId = Integer.parseInt(ID);
-		CheckSurveyAnswerForm checkSurveyAnswerForm = new CheckSurveyAnswerForm();
-		checkSurveyAnswerForm.checkAnswer(surveyId, req);
-		int score = checkSurveyAnswerForm.getScore();
 		
-		//TODO
-		// update the course
-		System.out.println("CourseID:" + String.valueOf((int) req.getSession().getAttribute("courseId")));
-		CourseDao course = CourseDao.find((int) req.getSession().getAttribute("courseId"));
-		Time currentTime = new Time(new Date().getTime());
-		long diff = currentTime.getTime() - course.getTime().getTime();
-		int diffSeconds = Math.toIntExact(diff / 1000 % 60);
-        int diffMinutes = Math.toIntExact(diff / (60 * 1000) % 60);
-        int diffHours = Math.toIntExact(diff / (60 * 60 * 1000) % 24);
-		
-		Time time = new Time(diffHours, diffMinutes, diffSeconds);
-		
-		CourseDao.update(course.getId(), score, time);
-		req.getSession().removeAttribute("courseId");
-		
-		req.setAttribute("userName", course.getUser().getName());
-		req.setAttribute("survey", course.getSurvey());
-		req.setAttribute("time", time);
-		req.setAttribute("score", score);
-		req.getRequestDispatcher("/user/result.jsp").forward(req, resp);
-		
-//		CourseDao course = new CourseDao();
-//		req.setAttribute("course", course);
-		
+		if(POST)
+		{
+			int surveyId = Integer.parseInt(ID);
+			UserDao user = (UserDao)req.getSession().getAttribute(Controller.USER_SESSION);
+			
+			// Create the course
+			int courseId = CourseDao.insert(user.getId(), surveyId, 0, new Time(0, 0, 0));
+			
+			System.out.println("Course id : " + courseId);
+			
+			
+			CheckSurveyAnswerForm checkSurveyAnswerForm = new CheckSurveyAnswerForm(courseId);
+			checkSurveyAnswerForm.checkAnswer(surveyId, req);
+			int score = checkSurveyAnswerForm.getScore();
+			
+			long start = (long)req.getSession().getAttribute("courseStart");
+			
+			CourseDao course = CourseDao.find(courseId);
+			Time currentTime = new Time(new Date().getTime());
+			long diff = currentTime.getTime() - start;
+			
+			int diffSeconds = Math.toIntExact(diff / 1000 % 60);
+	        int diffMinutes = Math.toIntExact(diff / (60 * 1000) % 60);
+	        int diffHours = Math.toIntExact(diff / (60 * 60 * 1000) % 24);
+			
+			Time time = new Time(diffHours, diffMinutes, diffSeconds);
+			
+			CourseDao.update(course.getId(), score, time);
+			req.getSession().removeAttribute("courseId");
+			
+			req.setAttribute("userName", course.getUser().getName());
+			req.setAttribute("survey", course.getSurvey());
+			req.setAttribute("time", time);
+			req.setAttribute("score", score);
+			req.getRequestDispatcher("/user/result.jsp").forward(req, resp);
+			
+//			CourseDao course = new CourseDao();
+//			req.setAttribute("course", course);
+		}
 	}
 	
 	public void surveyHistory(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

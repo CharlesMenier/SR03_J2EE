@@ -12,6 +12,7 @@ public class SurveyDao {
 	private int id;
 	private SubjectDao subject;
 	private boolean status;
+	private boolean done = false;
 	
 	public SurveyDao(int i, int iS, boolean s)
 	{
@@ -32,6 +33,10 @@ public class SurveyDao {
 	public SubjectDao getSubject(){ return subject; }
 	
 	public boolean getStatus(){ return status; }
+	
+	public boolean getDone() { return done; }
+	
+	public void setDone(boolean a) { done = a; }
 	
 	public static SurveyDao find(int id)
 	{
@@ -155,6 +160,35 @@ public class SurveyDao {
 			System.out.println("Query error : SurveyrDao.update()");
 			e.printStackTrace();
 			return edited;
+		}
+	}
+	
+	public static List<SurveyDao> findAllForUser(UserDao user)
+	{
+		Connection cn = new DaoConnector().getConnection();
+		List<SurveyDao> list = new ArrayList<SurveyDao>();
+		
+		try {
+			Statement stmt = (Statement)cn.createStatement();
+			String sql = "SELECT * FROM survey";
+			ResultSet rs = stmt.executeQuery(sql);
+			
+			while(rs.next())
+			{
+				SurveyDao srv = new SurveyDao(rs.getInt("srv_id"), rs.getInt("srv_idSubject"), rs.getBoolean("srv_status"));
+				if(user.hasDoneSurvey(srv.getId()))
+					srv.setDone(true);
+				list.add(srv);
+			}
+			
+			cn.close();
+			return list;
+		} 
+		catch(SQLException e)
+		{
+			System.out.println("Query error : SurveyDao.findAll()");
+			e.printStackTrace();
+			return list;
 		}
 	}
 	
