@@ -14,6 +14,7 @@ public class QuestionDao implements Comparable<QuestionDao> {
 	private String label;
 	private int number;
 	private boolean status;
+	private List<AnswerDao> answers;
 	
 	public QuestionDao(int i, int iS, String l, int n, boolean s)
 	{
@@ -33,6 +34,10 @@ public class QuestionDao implements Comparable<QuestionDao> {
 	public String getLabel(){ return label; }
 	
 	public boolean getStatus(){ return status; }
+	
+	public List<AnswerDao> getAnswers() { return answers; }
+	
+	public void setAnswers(List<AnswerDao> list) { answers = list; }
 	
 	public static QuestionDao find(int id)
 	{
@@ -196,7 +201,7 @@ public class QuestionDao implements Comparable<QuestionDao> {
 		
 		try {
 			Statement stmt = (Statement)cn.createStatement();
-			String sql = "SELECT * FROM question WHERE qst_idSurvey=" + survey;
+			String sql = "SELECT * FROM question WHERE qst_idSurvey=" + survey + " ORDER BY qst_number";
 			ResultSet rs = stmt.executeQuery(sql);
 			
 			while(rs.next())
@@ -214,6 +219,36 @@ public class QuestionDao implements Comparable<QuestionDao> {
 		catch(SQLException e)
 		{
 			System.out.println("Query error : QuestionDao.findAll()");
+			e.printStackTrace();
+			return list;
+		}
+	}
+	
+	public static List<QuestionDao> findAllActive(int survey)
+	{
+		Connection cn = new DaoConnector().getConnection();
+		List<QuestionDao> list = new ArrayList<QuestionDao>();
+		
+		try {
+			Statement stmt = (Statement)cn.createStatement();
+			String sql = "SELECT * FROM question WHERE qst_idSurvey=" + survey + " AND qst_status=1 ORDER BY qst_number";
+			ResultSet rs = stmt.executeQuery(sql);
+			
+			while(rs.next())
+			{
+				list.add(new QuestionDao(rs.getInt("qst_id"), 
+						rs.getInt("qst_idSurvey"), 
+						rs.getString("qst_label"),
+						rs.getInt("qst_number"),
+						rs.getBoolean("qst_status")));
+			}
+			
+			cn.close();
+			return list;
+		} 
+		catch(SQLException e)
+		{
+			System.out.println("Query error : QuestionDao.findAllActive()");
 			e.printStackTrace();
 			return list;
 		}

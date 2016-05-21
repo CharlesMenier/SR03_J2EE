@@ -63,7 +63,7 @@
 		            <c:forEach var="subjects" items="${subjects}">
 			            <c:choose>
 						    <c:when test="${subjects.id == survey.subject.id}">
-						        <option value="${subjects.id}" selected="true">${subjects.name}</option>
+						        <option value="${subjects.id}" selected="selected">${subjects.name}</option>
 						    </c:when>    
 						    <c:otherwise>
 						    	<option value="${subjects.id}">${subjects.name}</option>

@@ -39,6 +39,6 @@
   </table>
 </div>
 
-<a href="<%=application.getContextPath()%>/user/user.jsp" class="btn btn-success" role="button">Retourner</a>
+<a href="<%=application.getContextPath()%>/user/user.jsp" class="btn btn-success" role="button">Retour</a>
 </body>
 </html>

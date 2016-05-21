@@ -28,10 +28,10 @@ public class DaoConnector {
 		
 		try {
 			String driver 	= "com.mysql.jdbc.Driver";//props.getProperty("driver");
-			String url 		= "jdbc:mysql://tuxa.sme.utc:3306/sr03p002";//props.getProperty("url");
-//			String url		= "jdbc:mysql://localhost/sr03p002";
-			String user		= "sr03p002";//props.getProperty("user");
-			String password	= "oVVEgn8n";//"oVVEgn8n";//props.getProperty("password");
+//			String url 		= "jdbc:mysql://tuxa.sme.utc:3306/sr03p002";//props.getProperty("url");
+			String url		= "jdbc:mysql://localhost/sr03p002";
+			String user		= "root";//props.getProperty("user");
+			String password	= "";//"oVVEgn8n";//props.getProperty("password");
 			
 			if(driver != null)
 				Class.forName(driver);

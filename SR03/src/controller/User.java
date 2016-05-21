@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import model.dao.CourseDao;
 import model.dao.SubjectDao;
 import model.dao.SurveyDao;
 import model.dao.UserDao;
@@ -45,6 +46,10 @@ public class User extends Controller {
 			
 		case "add":
 			addAction(req, resp);
+			break;
+			
+		case "infos":
+			infosAction(req, resp);
 			break;
 			
 		default:
@@ -126,6 +131,22 @@ public class User extends Controller {
 			}
 			//req.getRequestDispatcher(PAGE).forward(req,  resp);
 			resp.sendRedirect(req.getContextPath() + URL);
+		}
+	}
+	
+	private void infosAction(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
+	{
+		if(ID != null)
+		{
+			UserDao user = UserDao.find(Integer.parseInt(ID));
+			
+			if(user != null)
+			{
+				List<CourseDao> courses = CourseDao.findAll(user.getId());
+				req.setAttribute("user", user);
+				req.setAttribute("courses", courses);
+			}
+			req.getRequestDispatcher("/admin/userInfos.jsp").forward(req, resp);
 		}
 	}
 

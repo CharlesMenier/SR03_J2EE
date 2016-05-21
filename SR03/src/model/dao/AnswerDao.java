@@ -180,7 +180,38 @@ public class AnswerDao implements Comparable<AnswerDao> {
 		
 		try {
 			Statement stmt = (Statement)cn.createStatement();
-			String sql = "SELECT * FROM answer WHERE asw_idQuestion=" + question;
+			String sql = "SELECT * FROM answer WHERE asw_idQuestion=" + question + " ORDER BY asw_number";
+			ResultSet rs = stmt.executeQuery(sql);
+			
+			while(rs.next())
+			{
+				list.add(new AnswerDao(rs.getInt("asw_id"), 
+						rs.getInt("asw_idQuestion"), 
+						rs.getString("asw_label"),
+						rs.getInt("asw_number"),
+						rs.getBoolean("asw_correct"),
+						rs.getBoolean("asw_status")));
+			}
+			
+			cn.close();
+			return list;
+		} 
+		catch(SQLException e)
+		{
+			System.out.println("Query error : AnswerDao.findAll()");
+			e.printStackTrace();
+			return list;
+		}
+	}
+	
+	public static List<AnswerDao> findAllActive(int question)
+	{
+		Connection cn = new DaoConnector().getConnection();
+		List<AnswerDao> list = new ArrayList<AnswerDao>();
+		
+		try {
+			Statement stmt = (Statement)cn.createStatement();
+			String sql = "SELECT * FROM answer WHERE asw_idQuestion=" + question + " AND asw_status=1 ORDER BY asw_number";
 			ResultSet rs = stmt.executeQuery(sql);
 			
 			while(rs.next())
@@ -214,10 +245,10 @@ public class AnswerDao implements Comparable<AnswerDao> {
 			String sql = "UPDATE answer " +
 					"SET asw_idQuestion=" + qID + 
 					", asw_label='" + label + 
-					"', asw_number=" + number +
-					"', asw_correct=" + correct +
-					", asw_status=" + status +
-					" WHERE asw_id=" + ID;
+					"', asw_number='" + number +
+					"', asw_correct='" + correct +
+					"', asw_status='" + status +
+					"' WHERE asw_id=" + ID;
 			
 			if(stmt.executeUpdate(sql) > 0) edited = true;
 			

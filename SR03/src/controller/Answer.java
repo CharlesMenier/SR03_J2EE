@@ -99,7 +99,7 @@ public class Answer extends Controller {
 				
 				//@todo corriger
 				
-				if(AnswerDao.exist(question, number))
+				/*if(AnswerDao.exist(question, number))
 				{
 					req.setAttribute("error", "Une autre réponse porte déjà ce numéro");
 				}
@@ -107,8 +107,9 @@ public class Answer extends Controller {
 				{
 					req.setAttribute("error", "Cette question a déjà une réponse correcte");
 				}
-				else if(!AnswerDao.update(Integer.parseInt(ID), question, label, number, correct, status))
+				else */if(!AnswerDao.update(Integer.parseInt(ID), question, label, number, correct, status))
 				{
+					System.out.println("Error");
 					req.setAttribute("error", "Erreur lors de l'édition");
 				}
 				

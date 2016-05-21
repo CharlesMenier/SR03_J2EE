@@ -15,8 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.catalina.valves.rewrite.Substitution.RewriteRuleBackReferenceElement;
-
 import model.CheckSurveyAnswerForm;
 import model.dao.AnswerDao;
 import model.dao.CourseDao;
@@ -34,30 +32,18 @@ public class UserSurvey extends Controller {
 		List<SubjectDao> subjects = null;
 		
 		
-		if (ACTION == null) {
+		if (ACTION == null) 
+		{
 			// Display all surveys
 			surveys = SurveyDao.findAll();
 			subjects = SubjectDao.findAll();
-			if (surveys.isEmpty() || subjects.isEmpty()) {
+			
+			if (surveys.isEmpty() || subjects.isEmpty()) 
+			{
 				req.setAttribute("error", "Pas de questionnaire");
 			}
-			String curPage = req.getParameter("curPage");
-			int currentPage;
-			if (curPage == null) {
-				currentPage = 1;
-			} else {
-				currentPage = Integer.parseInt(curPage);
-			}
-			ArrayList<SurveyDao> shownSurveys = new ArrayList<SurveyDao>();
-			for (int i=5*(currentPage-1); i<5*currentPage; i++) {
-				if (i < surveys.size()) {
-					shownSurveys.add(surveys.get(i));
-				}
-			}
-				
-			req.setAttribute("pageNum", surveys.size()/5 + 1);
-			req.setAttribute("currentPage", currentPage);
-			req.setAttribute("surveys", shownSurveys);
+			
+			req.setAttribute("surveys", surveys);
 			req.setAttribute("subjects", subjects);
 			req.setAttribute("selectedSubject", "defaut");
 			req.getRequestDispatcher("/user/survey.jsp").forward(req, resp);
@@ -114,32 +100,26 @@ public class UserSurvey extends Controller {
 		}
 	}
 	
-	public void answerSurvey(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	public void answerSurvey(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException 
+	{
 		SurveyDao survey = null;
+		
 		survey = SurveyDao.find(Integer.parseInt(ID));
-		if (survey == null) {
+		
+		if (survey == null) 
+		{
 			req.setAttribute("error", "Erreur lors du chargement");
-		} else {
-			List<QuestionDao> questions = QuestionDao.findAll(survey.getId());
-			for (QuestionDao question : questions) {
-				if (question.getStatus() == false) {
-					// Remove invalid question
-					questions.remove(question);
-				} else {
-					ArrayList<AnswerDao> answers = (ArrayList<AnswerDao>) AnswerDao.findAll(question.getId());
-					// Get valid answers
-					for (AnswerDao answer : answers) {
-						if (answer.getStatus() == false) {
-							answers.remove(answer);
-						}
-					}
-					System.out.println(question.getLabel() + ":" + answers.size());
-					Collections.sort(answers);
-					
-					req.setAttribute("question" + String.valueOf(question.getId()), answers);
-				}
+		} 
+		else
+		{
+			// Get active questions
+			List<QuestionDao> questions = QuestionDao.findAllActive(survey.getId());
+			for (QuestionDao question : questions) 
+			{
+				// Get associated active answers
+				List<AnswerDao> answers = AnswerDao.findAllActive(question.getId());
+				question.setAnswers(answers);
 			}
-			req.setAttribute("pageNumber", questions.size()/3 + 1);
 			req.setAttribute("questions", questions);
 		}
 		req.setAttribute("survey", survey);

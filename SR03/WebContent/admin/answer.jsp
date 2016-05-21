@@ -73,7 +73,7 @@
 		        <div class="form-group">
 					<label for="correct_edit">Bonne réponse :</label>
 					<c:choose>
-					    <c:when test="${answer.status == true}">
+					    <c:when test="${answer.correct == true}">
 					        <input class="form-control" type="checkbox" id="correct_edit" name="correct_edit" checked="checked"/>
 					    </c:when>    
 					    <c:otherwise>
@@ -85,7 +85,7 @@
 				<div class="form-group">
 					<label for="status_edit">Actif :</label>
 					<c:choose>
-					    <c:when test="${question.status == true}">
+					    <c:when test="${answer.status == true}">
 					        <input class="form-control" type="checkbox" id="status_edit" name="status_edit" checked="checked"/>
 					    </c:when>    
 					    <c:otherwise>
@@ -134,8 +134,6 @@
 	</div>
 	
 	<div class="error">${error}</div>
-	
-	<a href="<%=application.getContextPath()%>/admin/questions/show/${SURVEY}" class="btn btn-default">Retour</a>
 	
 	<script type="text/javascript">
 	$(function() {

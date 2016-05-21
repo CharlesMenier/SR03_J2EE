@@ -54,7 +54,7 @@
 		</thead>
 		<tbody>
 			<c:forEach var="survey" items="${surveys}">
-				<tr>
+				<tr class="tr-survey">
 					<td>${survey.id}</td>
 					<td>${survey.subject.name}</td>
 					<td>
@@ -62,8 +62,7 @@
 							<c:when test="${survey.status}">
 								<a href="<%=application.getContextPath()%>/user/survey/answer/${survey.id}">Commencer</a>
 							</c:when>
-							<c:otherwise>Pas disponible</c:otherwise>
-						
+							<c:otherwise>Non disponible</c:otherwise>
 						</c:choose>
 					</td>
 				</tr>
@@ -71,33 +70,46 @@
 		</tbody>
 	</table>
 	
-	<ul class="pagination">
-		<%
-			int pageNumber = (int) request.getAttribute("pageNum");
-			int currentPage = (int) request.getAttribute("currentPage");
-			String selectedSubject = (String) request.getAttribute("selectedSubject");
-			System.out.println("currentPage : " +currentPage);
-			System.out.println("pageNumber : " + String.valueOf(pageNumber));
-			String url = "";
-			if (selectedSubject.equals("default")) {
-				url = request.getContextPath() + "/user/survey?curPage=";
-			} else {
-				url = request.getContentType() + "/user/survey/search/" + selectedSubject + "?curPage=";
-			}
-			for (int i=1; i<=pageNumber; i++) {
-				if (i == currentPage) {
-					out.println("<li class=\"active\"><a = href=\"" + url + String.valueOf(i) + "\">" + 
-						String.valueOf(currentPage) + "</a></li>");
-				} else {
-					out.println("<li><a = href=\"" + url + String.valueOf(i) + "\">" + 
-							String.valueOf(currentPage) + "</a></li>");	
-				}
-			}
-		%>
-	</ul>
-	<br/>
+	<button id="prev-survey" class="btn btn-default">Précédent</button>
+	<button id="next-survey" class="btn btn-default">Suivant</button>
 	
-	<a href="<%=application.getContextPath()%>/user/user.jsp" class="btn btn-success" role="button">Retourner</a>
+	<a href="<%=application.getContextPath()%>/user/user.jsp" class="btn btn-success" role="button">Retour</a>
+	
+	<script type="text/javascript">
+	$(function() {
+		  var items = $(".tr-survey");
+		  var numItems = items.length;
+		  var perPage = 2;
+		  var current = 0;
+		  var numPage = (numItems / perPage) - 1;
+		  
+		  items.slice(perPage).hide();
+		  
+		  $('#prev-survey').on('click', function(){
+			  	if(current > 0)
+				{
+			  		current--;
+			  		update();
+				}
+		  });
+		  
+		  $('#next-survey').on('click', function(){
+			  	if(current < numPage)
+				{
+			  		current++;
+			  		update();
+				}
+		  });
+		  
+		  function update()
+		  {
+			  var showFrom = perPage * (current);
+		      var showTo = showFrom + perPage;
+		      items.hide();
+		      items.slice(showFrom, showTo).show();
+		  }
+		});
+	</script>
 	
 </body>
 </html>
