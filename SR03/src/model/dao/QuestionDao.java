@@ -282,11 +282,26 @@ public class QuestionDao implements Comparable<QuestionDao> {
 	}
 	
 	@Override
+	public boolean equals(Object obj) {
+		// TODO Auto-generated method stub
+		if (obj instanceof QuestionDao) {
+			
+			System.out.println("Comparison of QuestionDao");
+			QuestionDao question = (QuestionDao) obj;
+			return this.id == question.getId();
+		} else {
+			return super.equals(obj);
+		}
+	}
+
+	@Override
 	public int compareTo(QuestionDao question)
 	{
 		if(id < question.getId()) return 1;
 		else if(id > question.getId()) return -1;
 		else return 0;
 	}
+	
+	
 	
 }

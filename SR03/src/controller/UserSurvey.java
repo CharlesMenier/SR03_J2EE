@@ -8,6 +8,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.logging.SimpleFormatter;
 
@@ -17,8 +19,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import model.AnsweredQuestion;
 import model.CheckSurveyAnswerForm;
+import model.SelectedAnswer;
 import model.dao.AnswerDao;
+import model.dao.CourseAnswerDao;
 import model.dao.CourseDao;
 import model.dao.QuestionDao;
 import model.dao.SubjectDao;
@@ -51,6 +56,7 @@ public class UserSurvey extends Controller {
 				System.out.println(srv.toString());
 			}
 			
+			req.setAttribute("pageNum", (surveys.size()-1)/5 + 1);
 			req.setAttribute("surveys", surveys);
 			req.setAttribute("subjects", subjects);
 			req.setAttribute("selectedSubject", "defaut");
@@ -190,11 +196,56 @@ public class UserSurvey extends Controller {
 	}
 	
 	public void surveyHistory(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		UserDao user = (UserDao) req.getSession().getAttribute(Controller.USER_SESSION);
-		ArrayList<CourseDao> courses = (ArrayList<CourseDao>) CourseDao.findAll(user.getId());
-		
-		req.setAttribute("courses", courses);
-		req.getRequestDispatcher("/user/history.jsp").forward(req, resp);
+		System.out.println("ID:" + ID);
+		if (ID == null) {			
+			UserDao user = (UserDao) req.getSession().getAttribute(Controller.USER_SESSION);
+			ArrayList<CourseDao> courses = (ArrayList<CourseDao>) CourseDao.findAll(user.getId());
+			
+			req.setAttribute("pageNum", (courses.size()-1)/10 + 1);
+			req.setAttribute("courses", courses);
+			req.getRequestDispatcher("/user/history.jsp").forward(req, resp);
+			
+		} else {
+			ArrayList<CourseAnswerDao> courseAnswers = (ArrayList<CourseAnswerDao>) CourseAnswerDao.findAll(Integer.parseInt(ID));
+			ArrayList<QuestionDao> courseQuestions = new ArrayList<QuestionDao>();
+			HashMap<Integer, Integer> userAnswers = new HashMap<Integer, Integer>(); 
+			for (CourseAnswerDao courseAnswer : courseAnswers) {
+				AnswerDao answer = AnswerDao.find(courseAnswer.getAnswerId());
+				if (answer != null) {
+					courseQuestions.add(answer.getQuestion());
+					userAnswers.put(answer.getQuestion().getId(), courseAnswer.getAnswerId());
+				}
+			}
+			
+			CourseDao course = CourseDao.find(Integer.parseInt(ID));
+			SurveyDao survey = course.getSurvey();
+			ArrayList<QuestionDao> surveyQuestions = (ArrayList<QuestionDao>) QuestionDao.findAll(survey.getId());
+			HashMap<AnsweredQuestion, ArrayList<SelectedAnswer>> courseHistory = new HashMap<AnsweredQuestion, ArrayList<SelectedAnswer>>(); 
+			for (QuestionDao question : courseQuestions) {
+				int index = surveyQuestions.indexOf(question);
+				if (index != -1) {
+					ArrayList<SelectedAnswer> selectedAnswers = new ArrayList<SelectedAnswer>();
+					ArrayList<AnswerDao> answers = (ArrayList<AnswerDao>) AnswerDao.findAll(question.getId());
+					boolean correctAnswer = false;
+					for (AnswerDao answer : answers) {
+						if (answer.getId() == userAnswers.get(question.getId())) {
+							selectedAnswers.add(new SelectedAnswer(answer.getLabel(), true));
+							if (answer.getCorrect()) {
+								correctAnswer = true;
+							}
+						} else {
+							selectedAnswers.add(new SelectedAnswer(answer.getLabel(), false));
+						}
+					}
+					courseHistory.put(new AnsweredQuestion(question.getLabel(), correctAnswer), selectedAnswers);
+				}
+			}
+			
+			req.setAttribute("pageNum", (courseHistory.keySet().size()-1)/5 + 1);
+			req.setAttribute("courseId", ID);
+			req.setAttribute("courseHistory", courseHistory);
+			req.getRequestDispatcher("/user/courseDetail.jsp").forward(req, resp);;
+		}
 	}
 	
 	

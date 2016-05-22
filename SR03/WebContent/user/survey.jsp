@@ -8,6 +8,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Questionnaires</title>
+<script type="text/javascript" src="<%=application.getContextPath()%>/resources/jquery.min.js"></script>
 <link href="<%=application.getContextPath()%>/resources/css/bootstrap.min.css" rel="stylesheet">
 <link href="<%=application.getContextPath()%>/resources/style.css" rel="stylesheet">
 </head>
@@ -60,7 +61,7 @@
 					<td>
 						<c:choose>
 							<c:when test="${survey.done}">
-								Questionnaire déjà fait
+								<a href="<%=application.getContextPath()%>/user/survey/answer/${survey.id}">Questionnaire déjà fait</a>
 							</c:when>
 							<c:when test="${survey.status}">
 								<a href="<%=application.getContextPath()%>/user/survey/answer/${survey.id}">Commencer</a>
@@ -73,43 +74,47 @@
 		</tbody>
 	</table>
 	
-	<button id="prev-survey" class="btn btn-default">Précédent</button>
-	<button id="next-survey" class="btn btn-default">Suivant</button>
-	
+	<ul class="pagination">
+		<%
+			int pageNumber = (Integer) request.getAttribute("pageNum");
+			for (int i=1; i<=pageNumber; i++) {
+				out.println("<li id=\"" + String.valueOf(i) + "\" class=\"li-page\"><a>" + String.valueOf(i) + "</a></li>");
+			}
+		%>
+
+		
+	</ul>
+	<br/>
 	<a href="<%=application.getContextPath()%>/user/user.jsp" class="btn btn-success" role="button">Retour</a>
 	
 	<script type="text/javascript">
 	$(function() {
 		  var items = $(".tr-survey");
 		  var numItems = items.length;
-		  var perPage = 2;
-		  var current = 0;
-		  var numPage = (numItems / perPage) - 1;
-		  
+		  var perPage = 5;
+		  var numPage = Math.ceil(numItems / perPage);
+		  var current = 1;
+		  var pageItems = $(".li-page");
 		  items.slice(perPage).hide();
+		  $("#" + current).addClass("active");
+		  for (i=1; i<=numPage; i++) {
+			  $("#" + i).on("click", function() {
+				  update($(this).attr("id"));
+			  });
+		  }		  
 		  
-		  $('#prev-survey').on('click', function(){
-			  	if(current > 0)
-				{
-			  		current--;
-			  		update();
-				}
-		  });
-		  
-		  $('#next-survey').on('click', function(){
-			  	if(current < numPage)
-				{
-			  		current++;
-			  		update();
-				}
-		  });
-		  
-		  function update()
+		  function update(pageNumber)
 		  {
-			  var showFrom = perPage * (current);
+			  var showFrom = perPage * (pageNumber-1);
 		      var showTo = showFrom + perPage;
+		      if (showTo > numItems) {
+		    	  showTo = numItems;
+		      }
 		      items.hide();
 		      items.slice(showFrom, showTo).show();
+		      $("#" + current).removeClass("active");
+		      $("#" + pageNumber).addClass("active");
+		      current = pageNumber;
 		  }
 		});
 	</script>

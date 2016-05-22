@@ -38,7 +38,7 @@ public final class CheckSurveyAnswerForm {
 			
 			String rightAnswer = getRightAnswer(answers);
 			
-			if (userAnswer != null && userAnswer == rightAnswer) 
+			if (userAnswer != null && userAnswer.equals(rightAnswer)) 
 			{
 				boolean isCorrect = true;
 				if (isCorrect) {

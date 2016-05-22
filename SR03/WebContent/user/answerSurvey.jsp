@@ -39,7 +39,7 @@
 					
 				</ol>
 				
-				<a id="prev" class="btn btn-default">Précédent</a>
+				<a id="prev" class="btn btn-default">PrÃ©cÃ©dent</a>
 				<a id="next" class="btn btn-default">Suivant</a>
 				
 				<button class="btn btn-success" type="submit">Terminer</button>

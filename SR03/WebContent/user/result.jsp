@@ -18,7 +18,7 @@
 </ul>
 
 <div class="btn-group btn-group-justified">
-  <a href="<%=application.getContextPath()%>/user/user.jsp" class="btn btn-primary">Retourner</a>
+  <a href="<%=application.getContextPath()%>/user/user.jsp" class="btn btn-primary">Retour</a>
   <a href="<%=application.getContextPath()%>/connexion/logout" class="btn btn-primary">Logout</a>
 </div>
 </body>
